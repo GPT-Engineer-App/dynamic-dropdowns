@@ -1,0 +1,54 @@
+<!-- Views/Home/Index.cshtml -->
+@model IEnumerable<Category>
+  @{ ViewData["Title"] = "Home Page"; }
+
+  <div>
+    <select id="categoryDropdown">
+      <option value="">Select Category</option>
+      @foreach (var category in Model) {
+      <option value="@category.Id">@category.Name</option>
+      }
+    </select>
+
+    <select id="productDropdown">
+      <option value="">Select Product</option>
+    </select>
+  </div>
+
+  <table id="productTable">
+    <thead>
+      <tr>
+        <th>Product Name</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  @section Scripts {
+  <script>
+    document.getElementById("categoryDropdown").addEventListener("change", function () {
+      var categoryId = this.value;
+      fetch(`/Home/GetProducts?categoryId=${categoryId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          var productDropdown = document.getElementById("productDropdown");
+          productDropdown.innerHTML = '<option value="">Select Product</option>';
+          data.forEach((product) => {
+            var option = document.createElement("option");
+            option.value = product.id;
+            option.text = product.name;
+            productDropdown.appendChild(option);
+          });
+
+          var productTableBody = document.getElementById("productTable").getElementsByTagName("tbody")[0];
+          productTableBody.innerHTML = "";
+          data.forEach((product) => {
+            var row = productTableBody.insertRow();
+            var cell = row.insertCell(0);
+            cell.textContent = product.name;
+          });
+        });
+    });
+  </script>
+  }</Category
+>
